@@ -1,0 +1,54 @@
+title: MAD 1 Bootcamp
+description: 8-Day Task Management App Tutorial for Placement Portal Preparation
+theme: just-the-docs
+
+url: https://yourusername.github.io
+baseurl: "/your-repo-name"
+
+# Enable search
+search_enabled: true
+search:
+  heading_level: 2
+  previews: 3
+  preview_words_before: 5
+  preview_words_after: 10
+
+# Aux links (top right)
+aux_links:
+  "GitHub":
+    - "https://github.com/yourusername/your-repo-name"
+
+aux_links_new_tab: true
+
+# Footer
+footer_content: "MAD 1 Bootcamp - Built with <a href=\"https://just-the-docs.github.io/just-the-docs/\">Just the Docs</a>"
+
+# Color scheme (light/dark)
+color_scheme: light
+
+# Back to top link
+back_to_top: true
+back_to_top_text: "Back to top"
+
+# Navigation
+nav_sort: case_insensitive
+
+# Heading anchor links
+heading_anchors: true
+
+# Callouts
+callouts:
+  highlight:
+    color: yellow
+  important:
+    title: Important
+    color: blue
+  new:
+    title: New
+    color: green
+  note:
+    title: Note
+    color: purple
+  warning:
+    title: Warning
+    color: red
