@@ -26,8 +26,8 @@ An 8-day roadmap to learn all core concepts required for building a **Placement 
 |-----|-------|-------------|
 | **Day 1** | [The Skeleton](day1-flask-routing.html) | Flask setup, routing and view functions |
 | **Day 2** | [The Foundation](day2-database.html) | SQLite, SQLAlchemy and CRUD operations |
-| **Day 3** | The Face | Jinja2 templates and Bootstrap UI |
-| **Day 4** | The Gatekeeper | User authentication and roles |
+| **Day 3** | [The Face](day3-jinja-bootstrap.html) | Jinja2 templates and Bootstrap UI |
+| **Day 4** | [The Gatekeeper](day4-auth.html) | User authentication and roles |
 | **Day 5** | The Interaction | Forms and database relationships |
 | **Day 6** | The Approval Flow | State management and flash messages |
 | **Day 7** | The Bridge | Search functionality and API basics |
