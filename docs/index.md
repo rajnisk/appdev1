@@ -32,6 +32,7 @@ An 8-day roadmap to learn all core concepts required for building a **Placement 
 | **Day 6** | [The Approval Flow](day6-approval-flow.html) | State management and flash messages |
 | **Day 7** | [The Bridge](day7-search-api.html) | Search functionality and API basics |
 | **Day 8** | [The Polish](day8-polish.html) | Refactoring and error handling |
+| **Final** | [Full App Code](final-taskmaster.html) | Complete TaskMaster code structure |
 
 ---
 

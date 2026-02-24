@@ -87,11 +87,112 @@ def login():
             flash('Invalid login details', 'danger')
             
     return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        # Check if user already exists
+        user = User.query.filter_by(username=username).first()
+        if user:
+            flash('Username already exists', 'danger')
+            return redirect('/signup')
+            
+        hashed_pw = generate_password_hash(password)
+        new_user = User(username=username, password_hash=hashed_pw)
+        
+        db.session.add(new_user)
+        db.session.commit()
+        
+        flash('Account created! You can now login.', 'success')
+        return redirect('/login')
+        
+    return render_template('signup.html')
 ```
 
 ---
 
-## 4. Protecting Routes
+## 4. Login & Signup Templates
+
+Use standard Bootstrap forms for a clean, professional look.
+
+### Login Form: `templates/login.html`
+
+{% raw %}
+```html
+{% extends "base.html" %}
+
+{% block title %}Login - TaskMaster{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">Login</h3>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" name="username" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Don't have an account? <a href="/signup">Sign up here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+```
+{% endraw %}
+
+### Signup Form: `templates/signup.html`
+
+{% raw %}
+```html
+{% extends "base.html" %}
+
+{% block title %}Signup - TaskMaster{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">Create Account</h3>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" name="username" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Sign Up</button>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="/login">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+```
+{% endraw %}
+
+---
+
+## 5. Protecting Routes
 
 If someone isn't logged in, we shouldn't let them see the tasks.
 
@@ -109,7 +210,7 @@ def tasks():
 
 ---
 
-## 5. Logout
+## 6. Logout
 
 Logging out is as simple as clearing the session.
 
