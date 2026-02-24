@@ -28,10 +28,10 @@ An 8-day roadmap to learn all core concepts required for building a **Placement 
 | **Day 2** | [The Foundation](day2-database.html) | SQLite, SQLAlchemy and CRUD operations |
 | **Day 3** | [The Face](day3-jinja-bootstrap.html) | Jinja2 templates and Bootstrap UI |
 | **Day 4** | [The Gatekeeper](day4-auth.html) | User authentication and roles |
-| **Day 5** | The Interaction | Forms and database relationships |
-| **Day 6** | The Approval Flow | State management and flash messages |
-| **Day 7** | The Bridge | Search functionality and API basics |
-| **Day 8** | The Polish | Refactoring and error handling |
+| **Day 5** | [The Interaction](day5-interaction.html) | Forms and database relationships |
+| **Day 6** | [The Approval Flow](day6-approval-flow.html) | State management and flash messages |
+| **Day 7** | [The Bridge](day7-search-api.html) | Search functionality and API basics |
+| **Day 8** | [The Polish](day8-polish.html) | Refactoring and error handling |
 
 ---
 
