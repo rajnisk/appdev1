@@ -1,10 +1,10 @@
 ---
-title: "Day 5: The Interaction (Forms & CRUD)"
+title: "Module 5: The Interaction (Forms & CRUD)"
 layout: default
 nav_order: 6
 ---
 
-# Day 5: The Interaction (Forms & CRUD)
+# Module 5: The Interaction (Forms & CRUD)
 
 **Goal:** Complete the user lifecycle by handling form submissions and linking data through relationships.
 
@@ -127,4 +127,4 @@ def delete_task(id):
 
 ---
 
-[Previous: Day 4](day4-auth.html){: .btn } [Next: Day 6](day6-approval-flow.html){: .btn .btn-primary }
+[Previous: Module 4](module4-auth.html){: .btn } [Next: Module 6](module6-approval-flow.html){: .btn .btn-primary }

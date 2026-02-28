@@ -323,4 +323,4 @@ if __name__ == '__main__':
 
 ---
 
-[Previous: Day 8](day8-polish.html){: .btn } [Back to Roadmap](index.html){: .btn .btn-primary }
+[Previous: Module 8](module8-polish.html){: .btn } [Back to Roadmap](index.html){: .btn .btn-primary }

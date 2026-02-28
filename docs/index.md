@@ -6,7 +6,7 @@ nav_order: 1
 
 # MAD 1 Bootcamp: Task Management App
 
-An 8-day roadmap to learn all core concepts required for building a **Placement Portal Application** using a simple **Task Management App** example.
+A 9-module roadmap to learn all core concepts required for building a **Placement Portal Application** using a simple **Task Management App** example.
 
 ---
 
@@ -20,18 +20,19 @@ An 8-day roadmap to learn all core concepts required for building a **Placement 
 
 ---
 
-## 8-Day Roadmap
+## 9-Module Roadmap
 
 | Day | Topic | Description |
 |-----|-------|-------------|
-| **Day 1** | [The Skeleton](day1-flask-routing.html) | Flask setup, routing and view functions |
-| **Day 2** | [The Foundation](day2-database.html) | SQLite, SQLAlchemy and CRUD operations |
-| **Day 3** | [The Face](day3-jinja-bootstrap.html) | Jinja2 templates and Bootstrap UI |
-| **Day 4** | [The Gatekeeper](day4-auth.html) | User authentication and roles |
-| **Day 5** | [The Interaction](day5-interaction.html) | Forms and database relationships |
-| **Day 6** | [The Approval Flow](day6-approval-flow.html) | State management and flash messages |
-| **Day 7** | [The Bridge](day7-search-api.html) | Search functionality and API basics |
-| **Day 8** | [The Polish](day8-polish.html) | Refactoring and error handling |
+| **Module 0** | [Introduction](module0-introduction.html) | Why Flask, Jinja, and SQLite? |
+| **Module 1** | [The Skeleton](module1-flask-routing.html) | Flask setup, routing and view functions |
+| **Module 2** | [The Foundation](module2-database.html) | SQLite, SQLAlchemy and CRUD operations |
+| **Module 3** | [The Face](module3-jinja-bootstrap.html) | Jinja2 templates and Bootstrap UI |
+| **Module 4** | [The Gatekeeper](module4-auth.html) | User authentication and roles |
+| **Module 5** | [The Interaction](module5-interaction.html) | Forms and database relationships |
+| **Module 6** | [The Approval Flow](module6-approval-flow.html) | State management and flash messages |
+| **Module 7** | [The Bridge](module7-search-api.html) | Search functionality and API basics |
+| **Module 8** | [The Polish](module8-polish.html) | Refactoring and error handling |
 | **Final** | [Full App Code](final-taskmaster.html) | Complete TaskMaster code structure |
 
 ---
@@ -86,4 +87,4 @@ pip install flask flask-sqlalchemy
 {: .note }
 Each day builds on the previous one. Complete them in order for the best learning experience.
 
-[Start Day 1](day1-flask-routing.html){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Start Module 0](module0-introduction.html){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }

@@ -1,10 +1,10 @@
 ---
-title: "Day 8: The Polish (Validation & Structure)"
+title: "Module 8: The Polish (Validation & Structure)"
 layout: default
 nav_order: 9
 ---
 
-# Day 8: The Polish (Validation & Structure)
+# Module 8: The Polish (Validation & Structure)
 
 **Goal:** Make your application robust, user-friendly, and ready for submission.
 
@@ -99,4 +99,4 @@ taskmaster/
 
 ---
 
-[Previous: Day 7](day7-search-api.html){: .btn } [Back to Roadmap](index.html){: .btn .btn-primary }
+[Previous: Module 7](module7-search-api.html){: .btn } [Back to Roadmap](index.html){: .btn .btn-primary }

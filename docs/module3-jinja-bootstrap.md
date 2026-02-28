@@ -1,10 +1,10 @@
 ---
-title: "Day 3: The Face (Jinja2 & Bootstrap)"
+title: "Module 3: The Face (Jinja2 & Bootstrap)"
 layout: default
 nav_order: 4
 ---
 
-# Day 3: The Face (Jinja2 & Bootstrap)
+# Module 3: The Face (Jinja2 & Bootstrap)
 
 **Goal:** Build a professional UI that connects to the backend using templates and modern styling.
 
@@ -194,4 +194,4 @@ Bootstrap's Navbar is essential for role-based navigation.
 
 ---
 
-[Previous: Day 2](day2-database.html){: .btn } [Next: Day 4](day4-auth.html){: .btn .btn-primary }
+[Previous: Module 2](module2-database.html){: .btn } [Next: Module 4](module4-auth.html){: .btn .btn-primary }

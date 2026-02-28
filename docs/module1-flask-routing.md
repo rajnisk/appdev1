@@ -1,10 +1,10 @@
 ---
-title: "Day 1: The Skeleton (Flask & Routing)"
+title: "Module 1: The Skeleton (Flask & Routing)"
 layout: default
 nav_order: 2
 ---
 
-# Day 1: The Skeleton (Flask & Routing)
+# Module 1: The Skeleton (Flask & Routing)
 
 **Goal:** Setup the environment and build the basic structure of a web app.
 
@@ -185,7 +185,7 @@ def user_task(username, task_id):
 
 ---
 
-## 6. Complete Day 1 App
+## 6. Complete Module 1 App
 
 Here's our complete TaskMaster skeleton:
 
@@ -256,7 +256,7 @@ if __name__ == '__main__':
 
 ---
 
-## Day 1 Exercises
+## Module 1 Exercises
 
 1. **Add a Priority Route:** Create `/priority/<level>` that displays tasks by priority (high, medium, low)
 
@@ -290,4 +290,4 @@ if __name__ == '__main__':
 
 ---
 
-[Next: Day 2 - The Foundation](day2-database.html){: .btn .btn-primary }
+[Next: Module 2 - The Foundation](module2-database.html){: .btn .btn-primary }

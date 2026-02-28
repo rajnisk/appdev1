@@ -1,10 +1,10 @@
 ---
-title: "Day 6: The Approval Flow (State Management)"
+title: "Module 6: The Approval Flow (State Management)"
 layout: default
 nav_order: 7
 ---
 
-# Day 6: The Approval Flow (State Management)
+# Module 6: The Approval Flow (State Management)
 
 **Goal:** Implement business logic and provide visual feedback for state changes.
 
@@ -117,4 +117,4 @@ We should only show the "Complete" button if the task is NOT already finished.
 
 ---
 
-[Previous: Day 5](day5-interaction.html){: .btn } [Next: Day 7](day7-search-api.md){: .btn .btn-primary }
+[Previous: Module 5](module5-interaction.html){: .btn } [Next: Module 7](module7-search-api.md){: .btn .btn-primary }

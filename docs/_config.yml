@@ -1,9 +1,9 @@
 title: MAD 1 Bootcamp
-description: 8-Day Task Management App Tutorial for Placement Portal Preparation
+description: 9-Module Task Management App Tutorial for Placement Portal Preparation
 theme: just-the-docs
 
-url: https://yourusername.github.io
-baseurl: "/your-repo-name"
+url: http://localhost:4000
+baseurl: ""
 
 # Enable search
 search_enabled: true
@@ -15,8 +15,8 @@ search:
 
 # Aux links (top right)
 aux_links:
-  "GitHub":
-    - "https://github.com/yourusername/your-repo-name"
+  "IITM BS / APP DEV I":
+    - "https://github.com/rajnisk/appdev1"
 
 aux_links_new_tab: true
 

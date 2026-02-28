@@ -1,10 +1,10 @@
 ---
-title: "Day 7: The Bridge (Search & API Basics)"
+title: "Module 7: The Bridge (Search & API Basics)"
 layout: default
 nav_order: 8
 ---
 
-# Day 7: The Bridge (Search & API Basics)
+# Module 7: The Bridge (Search & API Basics)
 
 **Goal:** Allow users to find data efficiently and expose raw data for external use.
 
@@ -101,4 +101,4 @@ def api_tasks():
 
 ---
 
-[Previous: Day 6](day6-approval-flow.html){: .btn } [Next: Day 8](day8-polish.md){: .btn .btn-primary }
+[Previous: Module 6](module6-approval-flow.html){: .btn } [Next: Module 8](module8-polish.md){: .btn .btn-primary }

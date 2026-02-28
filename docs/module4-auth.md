@@ -1,10 +1,10 @@
 ---
-title: "Day 4: The Gatekeeper (Auth & Roles)"
+title: "Module 4: The Gatekeeper (Auth & Roles)"
 layout: default
 nav_order: 5
 ---
 
-# Day 4: The Gatekeeper (Auth & Roles)
+# Module 4: The Gatekeeper (Auth & Roles)
 
 **Goal:** Secure the application and isolate data between different users.
 
@@ -244,4 +244,4 @@ def logout():
 
 ---
 
-[Previous: Day 3](day3-jinja-bootstrap.html){: .btn } [Next: Day 5](day5-interaction.html){: .btn .btn-primary }
+[Previous: Module 3](module3-jinja-bootstrap.html){: .btn } [Next: Module 5](module5-interaction.html){: .btn .btn-primary }

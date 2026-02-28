@@ -1,10 +1,10 @@
 ---
-title: "Day 2: The Foundation (SQLite & SQLAlchemy)"
+title: "Module 2: The Foundation (SQLite & SQLAlchemy)"
 layout: default
 nav_order: 3
 ---
 
-# Day 2: The Foundation (SQLite & SQLAlchemy)
+# Module 2: The Foundation (SQLite & SQLAlchemy)
 
 **Goal:** Make data persist using a database.
 
@@ -270,7 +270,7 @@ None
 
 ---
 
-## 7. Complete Day 2 App
+## 7. Complete Module 2 App
 
 ```python
 from flask import Flask
@@ -415,7 +415,7 @@ db.session.commit()
 
 # Add sample tasks
 tasks = [
-    Task(title='Complete Flask Tutorial', description='Finish Day 1 and Day 2', priority='high', status='in-progress'),
+    Task(title='Complete Flask Tutorial', description='Finish Module 1 and Module 2', priority='high', status='in-progress'),
     Task(title='Setup Database', description='Configure SQLAlchemy with SQLite', priority='high', status='completed'),
     Task(title='Build Dashboard UI', description='Create task list with Bootstrap', priority='medium'),
     Task(title='Add User Authentication', description='Login and signup forms', priority='medium'),
@@ -433,7 +433,7 @@ Now run the app and visit `/tasks` to see your data.
 
 ---
 
-## Day 2 Exercises
+## Module 2 Exercises
 
 1. **Add a Category Field:** Add a `category` column (work, personal, study) to the Task model
 
@@ -529,4 +529,4 @@ db.session.commit()
 
 ---
 
-[Previous: Day 1](day1-flask-routing.html){: .btn } [Next: Day 3](day3-jinja-bootstrap.html){: .btn .btn-primary }
+[Previous: Module 1](module1-flask-routing.html){: .btn } [Next: Module 3](module3-jinja-bootstrap.html){: .btn .btn-primary }
