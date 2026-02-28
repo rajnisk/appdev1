@@ -43,6 +43,16 @@ Before we start building, let's make sure you have all the necessary tools insta
 
 #### Check if Python is already installed
 
+**Windows:**
+```cmd
+python --version
+```
+or
+```cmd
+py --version
+```
+
+**Linux/macOS:**
 ```bash
 python3 --version
 ```
@@ -51,13 +61,22 @@ If you see a version number (e.g., `Python 3.11.5`), you're good to go! If not, 
 
 #### Install Python
 
-**Windows (using WSL recommended):**
-1. Open PowerShell as Administrator
-2. Run: `wsl --install`
-3. Restart your computer
-4. After restart, Ubuntu will launch automatically
-5. Update Ubuntu: `sudo apt update && sudo apt upgrade -y`
-6. Install Python: `sudo apt install python3 python3-pip python3-venv -y`
+**Windows:**
+1. Go to [python.org/downloads](https://www.python.org/downloads/)
+2. Download the latest Python 3.x installer for Windows
+3. Run the installer
+4. **Important:** Check the box "Add Python to PATH" during installation
+5. Click "Install Now"
+6. Verify installation by opening Command Prompt or PowerShell and running:
+   ```cmd
+   python --version
+   pip --version
+   ```
+
+**Alternative for Windows (Microsoft Store):**
+1. Open Microsoft Store
+2. Search for "Python 3.11" or "Python 3.12"
+3. Click "Install"
 
 **Linux (Ubuntu/Debian):**
 ```bash
@@ -75,6 +94,13 @@ brew install python3
 
 #### Verify Python Installation
 
+**Windows:**
+```cmd
+python --version
+pip --version
+```
+
+**Linux/macOS:**
 ```bash
 python3 --version
 pip3 --version
@@ -84,16 +110,27 @@ pip3 --version
 
 #### Check if Git is already installed
 
+**Windows:**
+```cmd
+git --version
+```
+
+**Linux/macOS:**
 ```bash
 git --version
 ```
 
 #### Install Git
 
-**Windows (WSL/Ubuntu):**
-```bash
-sudo apt install git -y
-```
+**Windows:**
+1. Go to [git-scm.com/download/win](https://git-scm.com/download/win)
+2. Download the latest Git for Windows installer
+3. Run the installer
+4. Use the default options (recommended)
+5. After installation, open Command Prompt or PowerShell and verify:
+   ```cmd
+   git --version
+   ```
 
 **Linux (Ubuntu/Debian):**
 ```bash
@@ -110,21 +147,31 @@ brew install git
 
 #### Verify Git Installation
 
+**Windows:**
+```cmd
+git --version
+```
+
+**Linux/macOS:**
 ```bash
 git --version
 ```
 
 #### Configure Git
 
-```bash
-# Set your name and email
+**Windows (Command Prompt or PowerShell):**
+```cmd
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
-
-# Set default branch name
 git config --global init.defaultBranch main
+git config --list
+```
 
-# Verify configuration
+**Linux/macOS:**
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+git config --global init.defaultBranch main
 git config --list
 ```
 
@@ -132,6 +179,16 @@ git config --list
 
 #### Generate SSH Key for GitHub
 
+**Windows (Git Bash or PowerShell):**
+```bash
+# Generate SSH key
+ssh-keygen -t ed25519 -C "your.email@example.com"
+
+# Press Enter to accept default file location
+# Enter a passphrase or press Enter to skip (optional)
+```
+
+**Linux/macOS:**
 ```bash
 # Generate SSH key
 ssh-keygen -t ed25519 -C "your.email@example.com"
@@ -142,8 +199,18 @@ ssh-keygen -t ed25519 -C "your.email@example.com"
 
 #### Display and Copy Your Public Key
 
+**Windows (Git Bash):**
 ```bash
-# Display public key
+cat ~/.ssh/id_ed25519.pub
+```
+
+**Windows (PowerShell):**
+```powershell
+type $env:USERPROFILE\.ssh\id_ed25519.pub
+```
+
+**Linux/macOS:**
+```bash
 cat ~/.ssh/id_ed25519.pub
 ```
 
@@ -160,6 +227,12 @@ Copy the entire output (it should start with `ssh-ed25519`).
 
 #### Test SSH Connection
 
+**Windows (Git Bash or PowerShell):**
+```bash
+ssh -T git@github.com
+```
+
+**Linux/macOS:**
 ```bash
 ssh -T git@github.com
 ```
@@ -170,13 +243,52 @@ You should see: `Hi username! You've successfully authenticated...`
 
 Create a `.gitignore` file in your project root to exclude unnecessary files from version control:
 
+**Windows (PowerShell):**
+```powershell
+@"
+# Python
+__pycache__/
+*.py[cod]
+*`$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+logs/
+*.log
+"@ | Out-File -FilePath .gitignore -Encoding utf8
+```
+
+**Windows (Git Bash) or Linux/macOS:**
 ```bash
-# Create .gitignore file
 cat > .gitignore << EOF
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
+*\$py.class
 *.so
 .Python
 env/
@@ -209,7 +321,7 @@ logs/
 EOF
 ```
 
-Or manually create a `.gitignore` file with the above content.
+**Or manually create a `.gitignore` file** in your project root with the above content.
 
 ---
 
