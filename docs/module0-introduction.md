@@ -175,71 +175,93 @@ git config --global init.defaultBranch main
 git config --list
 ```
 
-### 3. GitHub Setup
+### 3. GitHub CLI Installation
 
-#### Generate SSH Key for GitHub
+GitHub CLI (gh) is a command-line tool that makes it easy to authenticate and work with GitHub from your terminal.
 
-**Windows (Git Bash or PowerShell):**
+#### Install GitHub CLI
+
+**Windows:**
+1. Go to [cli.github.com](https://cli.github.com/)
+2. Download the Windows installer
+3. Run the installer and follow the setup wizard
+4. Verify installation by opening Command Prompt or PowerShell:
+   ```cmd
+   gh --version
+   ```
+
+**Alternative for Windows (using winget):**
+```cmd
+winget install --id GitHub.cli
+```
+
+**Linux (Ubuntu/Debian):**
 ```bash
-# Generate SSH key
-ssh-keygen -t ed25519 -C "your.email@example.com"
+# Add GitHub CLI repository
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
 
-# Press Enter to accept default file location
-# Enter a passphrase or press Enter to skip (optional)
+# Update and install
+sudo apt update
+sudo apt install gh -y
+```
+
+**macOS:**
+```bash
+# Using Homebrew
+brew install gh
+```
+
+#### Verify GitHub CLI Installation
+
+**Windows:**
+```cmd
+gh --version
 ```
 
 **Linux/macOS:**
 ```bash
-# Generate SSH key
-ssh-keygen -t ed25519 -C "your.email@example.com"
-
-# Press Enter to accept default file location
-# Enter a passphrase or press Enter to skip (optional)
+gh --version
 ```
 
-#### Display and Copy Your Public Key
+### 4. GitHub Login
 
-**Windows (Git Bash):**
-```bash
-cat ~/.ssh/id_ed25519.pub
-```
+#### Login to GitHub using GitHub CLI
 
-**Windows (PowerShell):**
-```powershell
-type $env:USERPROFILE\.ssh\id_ed25519.pub
+**Windows (Command Prompt or PowerShell):**
+```cmd
+gh auth login
 ```
 
 **Linux/macOS:**
 ```bash
-cat ~/.ssh/id_ed25519.pub
+gh auth login
 ```
 
-Copy the entire output (it should start with `ssh-ed25519`).
+Follow the interactive prompts:
+1. **What account do you want to log into?** → Select `GitHub.com`
+2. **What is your preferred protocol?** → Select `HTTPS` (recommended) or `SSH`
+3. **Authenticate Git with your GitHub credentials?** → Select `Yes`
+4. **How would you like to authenticate?** → Select `Login with a web browser` (easiest)
+5. A code will be displayed. Press Enter to open your browser
+6. Copy the code and paste it in the browser when prompted
+7. Authorize GitHub CLI in your browser
 
-#### Add SSH Key to GitHub
+#### Verify GitHub Login
 
-1. Go to [GitHub.com](https://github.com) and sign in
-2. Click your profile picture → **Settings**
-3. Click **"SSH and GPG keys"** in the left sidebar
-4. Click **"New SSH key"**
-5. Paste your public key and give it a title (e.g., "My Laptop")
-6. Click **"Add SSH key"**
-
-#### Test SSH Connection
-
-**Windows (Git Bash or PowerShell):**
-```bash
-ssh -T git@github.com
+**Windows:**
+```cmd
+gh auth status
 ```
 
 **Linux/macOS:**
 ```bash
-ssh -T git@github.com
+gh auth status
 ```
 
-You should see: `Hi username! You've successfully authenticated...`
+You should see your GitHub username and authentication status.
 
-### 4. Create .gitignore File
+### 5. Create .gitignore File
 
 Create a `.gitignore` file in your project root to exclude unnecessary files from version control:
 
