@@ -116,7 +116,7 @@ def signup():
 
 ## 4. Login & Signup Templates
 
-Use standard Bootstrap forms for a clean, professional look.
+Use simple Bootstrap forms for clean, easy-to-understand UI.
 
 ### Login Form: `templates/login.html`
 
@@ -124,32 +124,22 @@ Use standard Bootstrap forms for a clean, professional look.
 ```html
 {% extends "base.html" %}
 
-{% block title %}Login - TaskMaster{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h3 class="card-title text-center mb-4">Login</h3>
-                <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                </form>
-                <div class="text-center mt-3">
-                    <p>Don't have an account? <a href="/signup">Sign up here</a></p>
-                </div>
-            </div>
-        </div>
+<h2>Login</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label>Username</label>
+        <input type="text" name="username" class="form-control" required>
     </div>
-</div>
+    <div class="mb-3">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" required>
+    </div>
+    <button class="btn btn-primary">Login</button>
+</form>
+<p class="mt-3">Don't have an account? <a href="/signup">Sign up here</a></p>
 {% endblock %}
 ```
 {% endraw %}
@@ -160,32 +150,22 @@ Use standard Bootstrap forms for a clean, professional look.
 ```html
 {% extends "base.html" %}
 
-{% block title %}Signup - TaskMaster{% endblock %}
+{% block title %}Signup{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h3 class="card-title text-center mb-4">Create Account</h3>
-                <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn btn-success w-100">Sign Up</button>
-                </form>
-                <div class="text-center mt-3">
-                    <p>Already have an account? <a href="/login">Login here</a></p>
-                </div>
-            </div>
-        </div>
+<h2>Create Account</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label>Username</label>
+        <input type="text" name="username" class="form-control" required>
     </div>
-</div>
+    <div class="mb-3">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" required>
+    </div>
+    <button class="btn btn-success">Sign Up</button>
+</form>
+<p class="mt-3">Already have an account? <a href="/login">Login here</a></p>
 {% endblock %}
 ```
 {% endraw %}

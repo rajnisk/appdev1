@@ -30,7 +30,7 @@ taskmaster/
 │   ├── edit_task.html   # Update Task Form
 │   ├── 404.html        # Error Page
 │   └── 500.html        # Error Page
-└── database.sqlite     # (Generated automatically)
+└── instance/database.sqlite     # (Generated automatically)
 ```
 
 ---
@@ -184,10 +184,32 @@ def delete_task(id):
         flash("Task removed", "secondary")
     return redirect('/')
 
+# --- API Route ---
+@app.route('/api/tasks')
+def api_tasks():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    tasks = Task.query.filter_by(user_id=session['user_id']).all()
+    tasks_list = []
+    for task in tasks:
+        tasks_list.append({
+            'id': task.id,
+            'title': task.title,
+            'description': task.description,
+            'status': task.status,
+            'priority': task.priority
+        })
+    return jsonify(tasks_list)
+
 # --- Error Handlers ---
 @app.errorhandler(404)
 def not_found(e):
     return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return render_template('500.html'), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
@@ -208,17 +230,17 @@ if __name__ == '__main__':
     <title>{% block title %}TaskMaster{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+<body>
+    <nav class="navbar navbar-dark bg-dark mb-3">
         <div class="container">
             <a class="navbar-brand" href="/">TaskMaster</a>
-            <div class="navbar-nav ms-auto">
+            <div>
                 {% if session.user_id %}
-                    <span class="nav-link text-light">Hi, {{ session.username }}</span>
-                    <a class="nav-link" href="/logout">Logout</a>
+                    <span class="text-light me-3">Hi, {{ session.username }}</span>
+                    <a class="text-light" href="/logout">Logout</a>
                 {% else %}
-                    <a class="nav-link" href="/login">Login</a>
-                    <a class="nav-link" href="/signup">Signup</a>
+                    <a class="text-light me-2" href="/login">Login</a>
+                    <a class="text-light" href="/signup">Signup</a>
                 {% endif %}
             </div>
         </div>
@@ -229,16 +251,13 @@ if __name__ == '__main__':
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for cat, msg in messages %}
-              <div class="alert alert-{{ cat }} alert-dismissible fade show">{{ msg }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-              </div>
+              <div class="alert alert-{{ cat }}">{{ msg }}</div>
             {% endfor %}
           {% endif %}
         {% endwith %}
 
         {% block content %}{% endblock %}
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 ```
@@ -251,36 +270,54 @@ if __name__ == '__main__':
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>My Tasks</h1>
-    <a href="/task/create" class="btn btn-primary">+ New Task</a>
-</div>
+<h1>My Tasks</h1>
+<a href="/task/create" class="btn btn-primary mb-3">+ New Task</a>
 
-<form action="/" method="GET" class="d-flex mb-4">
-    <input type="text" name="query" class="form-control me-2" placeholder="Search tasks...">
-    <button class="btn btn-outline-secondary">Search</button>
+<form action="/" method="GET" class="mb-3">
+    <input type="text" name="query" class="form-control d-inline-block" style="width: 300px;" placeholder="Search tasks...">
+    <button class="btn btn-secondary">Search</button>
 </form>
 
-<div class="row">
-    {% for task in tasks %}
-    <div class="col-md-4 mb-3">
-        <div class="card h-100 shadow-sm border-{{ 'success' if task.status == 'Completed' else 'warning' }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ task.title }}</h5>
-                <p class="card-text text-muted">{{ task.description }}</p>
-                <span class="badge bg-info">{{ task.priority }}</span>
-                <span class="badge bg-dark">{{ task.status }}</span>
-            </div>
-            <div class="card-footer bg-transparent border-0 d-flex justify-content-between">
-                <a href="/task/edit/{{ task.id }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                <a href="/task/delete/{{ task.id }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this task?')">Delete</a>
-            </div>
-        </div>
+{% for task in tasks %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>{{ task.title }}</h5>
+        <p>{{ task.description }}</p>
+        <p>
+            <span class="badge bg-secondary">{{ task.priority }}</span>
+            <span class="badge bg-dark">{{ task.status }}</span>
+        </p>
+        <a href="/task/edit/{{ task.id }}" class="btn btn-sm btn-primary">Edit</a>
+        <a href="/task/delete/{{ task.id }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this task?')">Delete</a>
     </div>
-    {% else %}
-    <p class="text-center text-muted">No tasks found. Create one to get started!</p>
-    {% endfor %}
 </div>
+{% else %}
+<p>No tasks found. Create one to get started!</p>
+{% endfor %}
+{% endblock %}
+```
+{% endraw %}
+
+### Login: `templates/login.html`
+
+{% raw %}
+```html
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<h2>Login</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label>Username</label>
+        <input type="text" name="username" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" required>
+    </div>
+    <button class="btn btn-primary">Login</button>
+</form>
+<p class="mt-3">Don't have an account? <a href="/signup">Sign up here</a></p>
 {% endblock %}
 ```
 {% endraw %}
@@ -292,21 +329,119 @@ if __name__ == '__main__':
 {% extends "base.html" %}
 {% block title %}Signup{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-4 mt-5">
-        <div class="card shadow">
-            <div class="card-body">
-                <h3 class="text-center mb-4">Create Account</h3>
-                <form method="POST">
-                    <div class="mb-3"><label>Username</label><input type="text" name="username" class="form-control" required></div>
-                    <div class="mb-3"><label>Password</label><input type="password" name="password" class="form-control" required></div>
-                    <button class="btn btn-success w-100">Sign Up</button>
-                </form>
-                <p class="mt-3 text-center">Have an account? <a href="/login">Login</a></p>
-            </div>
-        </div>
+<h2>Create Account</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label>Username</label>
+        <input type="text" name="username" class="form-control" required>
     </div>
-</div>
+    <div class="mb-3">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" required>
+    </div>
+    <button class="btn btn-success">Sign Up</button>
+</form>
+<p class="mt-3">Already have an account? <a href="/login">Login here</a></p>
+{% endblock %}
+```
+{% endraw %}
+
+### Create Task: `templates/create_task.html`
+
+{% raw %}
+```html
+{% extends "base.html" %}
+{% block title %}Create Task{% endblock %}
+{% block content %}
+<h2>Create New Task</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label>Title</label>
+        <input type="text" name="title" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Description</label>
+        <textarea name="description" class="form-control"></textarea>
+    </div>
+    <div class="mb-3">
+        <label>Priority</label>
+        <select name="priority" class="form-control">
+            <option value="Low">Low</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="High">High</option>
+        </select>
+    </div>
+    <button class="btn btn-primary">Create Task</button>
+    <a href="/" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
+```
+{% endraw %}
+
+### Edit Task: `templates/edit_task.html`
+
+{% raw %}
+```html
+{% extends "base.html" %}
+{% block title %}Edit Task{% endblock %}
+{% block content %}
+<h2>Edit Task</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label>Title</label>
+        <input type="text" name="title" class="form-control" value="{{ task.title }}" required>
+    </div>
+    <div class="mb-3">
+        <label>Description</label>
+        <textarea name="description" class="form-control">{{ task.description }}</textarea>
+    </div>
+    <div class="mb-3">
+        <label>Status</label>
+        <select name="status" class="form-control">
+            <option value="Pending" {% if task.status == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="In Progress" {% if task.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+            <option value="Completed" {% if task.status == 'Completed' %}selected{% endif %}>Completed</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Priority</label>
+        <select name="priority" class="form-control">
+            <option value="Low" {% if task.priority == 'Low' %}selected{% endif %}>Low</option>
+            <option value="Medium" {% if task.priority == 'Medium' %}selected{% endif %}>Medium</option>
+            <option value="High" {% if task.priority == 'High' %}selected{% endif %}>High</option>
+        </select>
+    </div>
+    <button class="btn btn-primary">Update Task</button>
+    <a href="/" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
+```
+{% endraw %}
+
+### Error 404: `templates/404.html`
+
+{% raw %}
+```html
+{% extends "base.html" %}
+{% block title %}404 - Not Found{% endblock %}
+{% block content %}
+<h1>404 - Page Not Found</h1>
+<p>The page you're looking for doesn't exist.</p>
+<a href="/" class="btn btn-primary">Go Home</a>
+{% endblock %}
+```
+{% endraw %}
+
+### Error 500: `templates/500.html`
+
+{% raw %}
+```html
+{% extends "base.html" %}
+{% block title %}500 - Server Error{% endblock %}
+{% block content %}
+<h1>500 - Server Error</h1>
+<p>Something went wrong on our end. Please try again later.</p>
+<a href="/" class="btn btn-primary">Go Home</a>
 {% endblock %}
 ```
 {% endraw %}

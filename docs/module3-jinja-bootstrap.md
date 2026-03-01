@@ -6,7 +6,7 @@ nav_order: 4
 
 # Module 3: The Face (Jinja2 & Bootstrap)
 
-**Goal:** Build a professional UI that connects to the backend using templates and modern styling.
+**Goal:** Build a clean, simple UI that connects to the backend using templates and minimal Bootstrap styling.
 
 ---
 
@@ -17,7 +17,7 @@ By the end of this day, you will be able to:
 - Create and use Jinja2 templates
 - Understand Template Inheritance with `base.html`
 - Pass data from Flask routes to HTML
-- Integrate Bootstrap 5 for professional styling
+- Integrate Bootstrap 5 for simple, clean styling
 - Use loops and conditionals in templates
 
 ---
@@ -50,18 +50,16 @@ Instead of repeating the same navbar and footer on every page, we use a "parent"
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}TaskMaster{% endblock %}</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+<body>
+    <nav class="navbar navbar-dark bg-dark mb-3">
         <div class="container">
             <a class="navbar-brand" href="/">TaskMaster</a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/">Home</a>
-                <a class="nav-link" href="/tasks">All Tasks</a>
+            <div>
+                <a class="text-light me-2" href="/">Home</a>
+                <a class="text-light" href="/tasks">All Tasks</a>
             </div>
         </div>
     </nav>
@@ -69,13 +67,6 @@ Instead of repeating the same navbar and footer on every page, we use a "parent"
     <div class="container">
         {% block content %}{% endblock %}
     </div>
-
-    <footer class="text-center mt-5 py-3 border-top">
-        <p>&copy; 2024 MAD 1 Bootcamp</p>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 ```
@@ -90,33 +81,20 @@ Instead of repeating the same navbar and footer on every page, we use a "parent"
 {% block title %}Dashboard - TaskMaster{% endblock %}
 
 {% block content %}
-    <div class="row align-items-center mb-4">
-        <div class="col">
-            <h1>Your Tasks</h1>
-        </div>
-        <div class="col text-end">
-            <button class="btn btn-primary">+ Add New Task</button>
-        </div>
-    </div>
+<h1>Your Tasks</h1>
 
-    <div class="row">
-        {% for task in tasks %}
-        <div class="col-md-4 mb-3">
-            <div class="card h-100 shadow-sm border-{{ 'success' if task.status == 'Done' else 'warning' }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ task.title }}</h5>
-                    <p class="card-text text-muted">{{ task.description }}</p>
-                    <span class="badge bg-{{ 'secondary' if task.priority == 'Low' else 'info' if task.priority == 'Medium' else 'danger' }}">
-                        {{ task.priority }}
-                    </span>
-                </div>
-                <div class="card-footer bg-transparent">
-                    <small class="text-muted">Status: {{ task.status }}</small>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+{% for task in tasks %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>{{ task.title }}</h5>
+        <p>{{ task.description }}</p>
+        <p>
+            <span class="badge bg-secondary">{{ task.priority }}</span>
+            <span class="badge bg-dark">{{ task.status }}</span>
+        </p>
     </div>
+</div>
+{% endfor %}
 {% endblock %}
 ```
 {% endraw %}
@@ -141,34 +119,39 @@ def index():
 
 ---
 
-## 4. Key Bootstrap Component: The Navbar
+## 4. Simple Bootstrap Components
 
-Bootstrap's Navbar is essential for role-based navigation.
+### Basic Navbar
 
 {% raw %}
 ```html
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Navbar</a>
-    <!-- Toggler for mobile view -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link active" href="#">Dashboard</a>
-        </li>
-        <!-- Logic for showing links based on role -->
-        {% if user_role == 'Admin' %}
-        <li class="nav-item">
-          <a class="nav-link" href="/admin">Manage Users</a>
-        </li>
-        {% endif %}
-      </ul>
+<nav class="navbar navbar-dark bg-dark mb-3">
+    <div class="container">
+        <a class="navbar-brand" href="/">TaskMaster</a>
+        <div>
+            <a class="text-light me-2" href="/">Home</a>
+            {% if session.user_id %}
+                <a class="text-light" href="/logout">Logout</a>
+            {% else %}
+                <a class="text-light" href="/login">Login</a>
+            {% endif %}
+        </div>
     </div>
-  </div>
 </nav>
+```
+{% endraw %}
+
+### Basic Form
+
+{% raw %}
+```html
+<form method="POST">
+    <div class="mb-3">
+        <label>Title</label>
+        <input type="text" name="title" class="form-control" required>
+    </div>
+    <button class="btn btn-primary">Submit</button>
+</form>
 ```
 {% endraw %}
 
@@ -188,9 +171,12 @@ Bootstrap's Navbar is essential for role-based navigation.
 ## Key Takeaways
 
 1. **`render_template`**: The function used to serve HTML files from the `templates/` folder.
-2. **Template Inheritance**: Saves time by sharing layouts across multiple pages.
-3. **Bootstrap CDN**: The fastest way to add CSS without downloading files.
-4. **Conditional Styling**: Using {% raw %}`{{ 'text-success' if ... }}`{% endraw %} to change colors based on data.
+2. **Template Inheritance**: Saves time by sharing layouts across multiple pages using `{% extends %}` and `{% block %}`.
+3. **Bootstrap Basics**: Use Bootstrap for simple styling - navbar, buttons, forms, cards. Keep it minimal and easy to understand.
+4. **Jinja2 Syntax**: 
+   - `{{ variable }}` - Display data
+   - `{% for %}` - Loop through lists
+   - `{% if %}` - Conditional logic
 
 ---
 

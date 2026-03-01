@@ -74,7 +74,7 @@ taskmaster/
 ├── static/          # CSS, Images, JS
 ├── templates/       # HTML files
 ├── venv/            # Virtual environment
-└── database.sqlite  # The DB file
+└── instance/database.sqlite  # The DB file
 ```
 
 ---

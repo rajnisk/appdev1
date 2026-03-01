@@ -361,7 +361,340 @@ def delete_task(task_id):
 
 ---
 
-## 7. Complete Module 2 App
+## 7. Database Relationships: Connecting Tables
+
+Relationships help us connect data between different tables. There are three main types of relationships you need to understand.
+
+### Understanding Relationships with Real-World Examples
+
+Think of relationships like connections in real life:
+- **One-to-One**: One person has one passport
+- **One-to-Many**: One teacher has many students
+- **Many-to-Many**: Many students enroll in many courses
+
+---
+
+### 1. One-to-Many Relationship (Most Common)
+
+**Concept:** One record in Table A can have many related records in Table B, but each record in Table B belongs to only one record in Table A.
+
+**Real-World Example:**
+- One **User** can create many **Tasks**
+- But each **Task** belongs to only one **User**
+
+**Visual Representation:**
+```
+User (1) ────────< (Many) Tasks
+  ├─ User 1
+  │   ├─ Task 1
+  │   ├─ Task 2
+  │   └─ Task 3
+  └─ User 2
+      ├─ Task 4
+      └─ Task 5
+```
+
+#### TaskMaster Example:
+
+```python
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    
+    # One-to-Many: One user has many tasks
+    tasks = db.relationship('Task', backref='owner', lazy=True)
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    
+    # Foreign Key: This task belongs to one user
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+```
+
+**How to Use:**
+```python
+# Get all tasks for a user
+user = User.query.get(1)
+all_user_tasks = user.tasks  # Returns list of Task objects
+
+# Get the owner of a task
+task = Task.query.get(1)
+task_owner = task.owner  # Returns User object (via backref)
+```
+
+#### Placement Portal Example:
+
+```python
+class Company(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    
+    # One company can create many placement drives
+    drives = db.relationship('PlacementDrive', backref='company', lazy=True)
+
+class PlacementDrive(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    
+    # Foreign Key: This drive belongs to one company
+    company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
+```
+
+**How to Use:**
+```python
+# Get all drives for a company
+company = Company.query.get(1)
+all_drives = company.drives  # Returns list of PlacementDrive objects
+
+# Get the company that created a drive
+drive = PlacementDrive.query.get(1)
+drive_company = drive.company  # Returns Company object
+```
+
+**Key Points:**
+- The "Many" side (Task/PlacementDrive) has the Foreign Key (`user_id`/`company_id`)
+- The "One" side (User/Company) has the relationship (`tasks`/`drives`)
+- `backref` creates a reverse relationship automatically
+
+---
+
+### 2. One-to-One Relationship (Less Common)
+
+**Concept:** One record in Table A relates to exactly one record in Table B, and vice versa.
+
+**Real-World Example:**
+- One **User** has one **Profile** (with additional details)
+- One **Profile** belongs to one **User**
+
+**Visual Representation:**
+```
+User (1) ──────── (1) Profile
+  ├─ User 1 ──────── Profile 1
+  └─ User 2 ──────── Profile 2
+```
+
+#### TaskMaster Example (Optional Enhancement):
+
+```python
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    
+    # One-to-One: One user has one profile
+    profile = db.relationship('UserProfile', backref='user', uselist=False)
+
+class UserProfile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    bio = db.Column(db.Text)
+    avatar_url = db.Column(db.String(200))
+    
+    # Foreign Key: This profile belongs to one user
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
+```
+
+**How to Use:**
+```python
+# Get user's profile
+user = User.query.get(1)
+user_profile = user.profile  # Returns single UserProfile object (not a list!)
+
+# Get profile's user
+profile = UserProfile.query.get(1)
+profile_user = profile.user  # Returns User object
+```
+
+#### Placement Portal Example:
+
+```python
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True)
+    
+    # One student has one academic record
+    academic_record = db.relationship('AcademicRecord', backref='student', uselist=False)
+
+class AcademicRecord(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    cgpa = db.Column(db.Float)
+    semester = db.Column(db.Integer)
+    
+    # Foreign Key: This record belongs to one student
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), unique=True, nullable=False)
+```
+
+**Key Points:**
+- Use `uselist=False` in the relationship (tells SQLAlchemy it's one-to-one, not a list)
+- The Foreign Key has `unique=True` (ensures one-to-one constraint)
+
+---
+
+### 3. Many-to-Many Relationship (Advanced)
+
+**Concept:** Records in Table A can relate to many records in Table B, and records in Table B can relate to many records in Table A.
+
+**Real-World Example:**
+- Many **Students** can apply to many **PlacementDrives**
+- Many **PlacementDrives** can have many **Students** applying
+
+**Visual Representation:**
+```
+Students (Many) ──────── (Many) PlacementDrives
+  ├─ Student 1 ──────── Drive 1
+  │   └─────────────── Drive 2
+  └─ Student 2 ──────── Drive 1
+      └─────────────── Drive 3
+```
+
+#### Placement Portal Example:
+
+```python
+# Association Table (Junction Table)
+# This table connects Students and PlacementDrives
+student_drive = db.Table('student_drive',
+    db.Column('student_id', db.Integer, db.ForeignKey('student.id'), primary_key=True),
+    db.Column('drive_id', db.Integer, db.ForeignKey('placement_drive.id'), primary_key=True)
+)
+
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    
+    # Many-to-Many: One student can apply to many drives
+    applied_drives = db.relationship('PlacementDrive', 
+                                     secondary=student_drive,
+                                     backref='applicants')
+
+class PlacementDrive(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    
+    # The relationship is defined on Student, but backref creates reverse access
+    # So you can also do: drive.applicants to get all students who applied
+```
+
+**How to Use:**
+```python
+# Student applies to a drive
+student = Student.query.get(1)
+drive = PlacementDrive.query.get(1)
+student.applied_drives.append(drive)
+db.session.commit()
+
+# Get all drives a student applied to
+student = Student.query.get(1)
+all_applied_drives = student.applied_drives  # Returns list of PlacementDrive objects
+
+# Get all students who applied to a drive
+drive = PlacementDrive.query.get(1)
+all_applicants = drive.applicants  # Returns list of Student objects
+```
+
+**Alternative: Using Application Model (Better for Placement Portal)**
+
+For Placement Portal, you'll likely want to store additional information about the application (like status, date applied, etc.), so use an intermediate model:
+
+```python
+class Application(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(20), default='applied')  # applied, shortlisted, selected, rejected
+    applied_date = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Foreign Keys
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False)
+    drive_id = db.Column(db.Integer, db.ForeignKey('placement_drive.id'), nullable=False)
+    
+    # Relationships
+    student = db.relationship('Student', backref='applications')
+    drive = db.relationship('PlacementDrive', backref='applications')
+
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+class PlacementDrive(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+```
+
+**How to Use:**
+```python
+# Student applies to a drive
+new_application = Application(
+    student_id=1,
+    drive_id=1,
+    status='applied'
+)
+db.session.add(new_application)
+db.session.commit()
+
+# Get all applications for a student
+student = Student.query.get(1)
+student_applications = student.applications  # Returns list of Application objects
+
+# Get all applications for a drive
+drive = PlacementDrive.query.get(1)
+drive_applications = drive.applications  # Returns list of Application objects
+```
+
+**Key Points:**
+- Many-to-Many requires an intermediate/junction table
+- You can use a simple `db.Table` or a full model (if you need extra fields)
+- The intermediate table has Foreign Keys to both tables
+
+---
+
+## Relationship Summary Table
+
+| Relationship Type | TaskMaster Example | Placement Portal Example | When to Use |
+|------------------|-------------------|-------------------------|-------------|
+| **One-to-Many** | User → Tasks | Company → PlacementDrives | Most common. One parent, many children |
+| **One-to-One** | User → Profile | Student → AcademicRecord | When you want to separate related data |
+| **Many-to-Many** | (Not used in TaskMaster) | Students ↔ PlacementDrives | When both sides can have multiple connections |
+
+---
+
+## Quick Reference: Relationship Syntax
+
+### One-to-Many
+```python
+# Parent Model (One)
+class Parent(db.Model):
+    children = db.relationship('Child', backref='parent', lazy=True)
+
+# Child Model (Many)
+class Child(db.Model):
+    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
+```
+
+### One-to-One
+```python
+# Model A
+class ModelA(db.Model):
+    model_b = db.relationship('ModelB', backref='model_a', uselist=False)
+
+# Model B
+class ModelB(db.Model):
+    model_a_id = db.Column(db.Integer, db.ForeignKey('model_a.id'), unique=True, nullable=False)
+```
+
+### Many-to-Many (Simple)
+```python
+# Junction Table
+association_table = db.Table('association',
+    db.Column('a_id', db.Integer, db.ForeignKey('model_a.id'), primary_key=True),
+    db.Column('b_id', db.Integer, db.ForeignKey('model_b.id'), primary_key=True)
+)
+
+# Model A
+class ModelA(db.Model):
+    model_bs = db.relationship('ModelB', secondary=association_table, backref='model_as')
+```
+
+---
+
+## 8. Complete Module 2 App
 
 ```python
 from flask import Flask, request, redirect
@@ -575,7 +908,7 @@ if __name__ == '__main__':
 
 ---
 
-## 8. Populating with Sample Data
+## 9. Populating with Sample Data
 
 You can create a route to add sample data programmatically:
 
@@ -639,7 +972,7 @@ Now run the app and visit `/tasks` to see your data. -->
 
 ---
 
-## Module 2 Exercises
+## 10. Module 2 Exercises
 
 1. **Add a Category Field:** Add a `category` column (work, personal, study) to the Task model
 
@@ -660,7 +993,7 @@ Now run the app and visit `/tasks` to see your data. -->
 
 ---
 
-## How This Relates to Your Final Project
+## 11. How This Relates to Your Final Project
 
 | TaskMaster Model | Placement Portal Models |
 |------------------|------------------------|
@@ -694,7 +1027,7 @@ class PlacementDrive(db.Model):
 
 ---
 
-## Key Takeaways
+## 12. Key Takeaways
 
 1. **SQLAlchemy** lets you work with databases using Python objects
 2. **Models** are Python classes that represent database tables
@@ -708,7 +1041,7 @@ class PlacementDrive(db.Model):
 
 ---
 
-## Quick Reference
+## 13. Quick Reference
 
 ```python
 # Create
