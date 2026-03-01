@@ -167,7 +167,7 @@ if __name__ == '__main__':
     app.run(debug=True)
 ```
 
-### Method 2: Using Flask Shell
+<!-- ### Method 2: Using Flask Shell
 
 ```bash
 flask shell
@@ -177,7 +177,7 @@ flask shell
 >>> from app import db
 >>> db.create_all()
 >>> exit()
-```
+``` -->
 
 {: .important }
 `db.create_all()` only creates tables that don't exist. It won't modify existing tables.
@@ -186,7 +186,11 @@ flask shell
 
 ## 6. CRUD Operations
 
-### CREATE - Adding New Tasks
+### Understanding CRUD Operations
+
+CRUD stands for **Create, Read, Update, Delete** - the four basic operations for working with data.
+
+<!-- ### CREATE - Adding New Tasks (Flask Shell Example)
 
 ```python
 # In Flask shell
@@ -202,40 +206,70 @@ flask shell
 >>> task3 = Task(title='Build UI', description='Create templates', priority='low')
 >>> db.session.add_all([task2, task3])
 >>> db.session.commit()
+``` -->
+
+### CREATE - Adding New Tasks (Route Example)
+
+Here's how to create a task using a Flask route:
+
+```python
+from flask import Flask, request, redirect
+
+@app.route('/task/create', methods=['GET', 'POST'])
+def create_task():
+    if request.method == 'POST':
+        # Get form data
+        title = request.form.get('title')
+        description = request.form.get('description')
+        priority = request.form.get('priority', 'medium')
+        
+        # Create new task object
+        new_task = Task(title=title, description=description, priority=priority)
+        
+        # Add to database session
+        db.session.add(new_task)
+        
+        # Commit to save to database
+        db.session.commit()
+        
+        return redirect('/tasks')
+    
+    return "Create Task Form Here"  # We'll build the form in Module 5
 ```
+
+**Key Points:**
+- `Task(...)` - Creates a new Task object
+- `db.session.add(new_task)` - Adds it to the session
+- `db.session.commit()` - Saves it to the database
 
 ### READ - Querying Tasks
 
+Here are the common query methods (used in routes):
+
 ```python
 # Get ALL tasks
->>> Task.query.all()
-[<Task 1: Learn Flask>, <Task 2: Setup Database>, <Task 3: Build UI>]
+tasks = Task.query.all()
 
 # Get task by ID
->>> Task.query.get(1)
-<Task 1: Learn Flask>
+task = Task.query.get(1)
 
 # Get FIRST matching task
->>> Task.query.filter_by(status='pending').first()
-<Task 1: Learn Flask>
+task = Task.query.filter_by(status='pending').first()
 
 # Get ALL matching tasks
->>> Task.query.filter_by(priority='high').all()
-[<Task 1: Learn Flask>]
+tasks = Task.query.filter_by(priority='high').all()
 
 # Filter with conditions
->>> Task.query.filter(Task.title.contains('Flask')).all()
-[<Task 1: Learn Flask>]
+tasks = Task.query.filter(Task.title.contains('Flask')).all()
 
 # Order results
->>> Task.query.order_by(Task.id.desc()).all()  # Newest first
+tasks = Task.query.order_by(Task.id.desc()).all()  # Newest first
 
 # Count results
->>> Task.query.filter_by(status='pending').count()
-3
+count = Task.query.filter_by(status='pending').count()
 ```
 
-### UPDATE - Modifying Tasks
+<!-- ### UPDATE - Modifying Tasks (Flask Shell Example)
 
 ```python
 # Get the task
@@ -251,9 +285,39 @@ flask shell
 # Verify
 >>> Task.query.get(1).status
 'in-progress'
+``` -->
+
+### UPDATE - Modifying Tasks (Route Example)
+
+Here's how to update a task using a Flask route:
+
+```python
+@app.route('/task/update/<int:task_id>', methods=['POST'])
+def update_task(task_id):
+    # Get the task from database
+    task = Task.query.get(task_id)
+    
+    if not task:
+        return "Task not found", 404
+    
+    # Update fields from form data
+    task.title = request.form.get('title', task.title)
+    task.description = request.form.get('description', task.description)
+    task.status = request.form.get('status', task.status)
+    task.priority = request.form.get('priority', task.priority)
+    
+    # Commit changes to database
+    db.session.commit()
+    
+    return redirect(f'/task/{task_id}')
 ```
 
-### DELETE - Removing Tasks
+**Key Points:**
+- `Task.query.get(id)` - Gets the task
+- Modify the object's attributes
+- `db.session.commit()` - Saves changes
+
+<!-- ### DELETE - Removing Tasks (Flask Shell Example)
 
 ```python
 # Get the task
@@ -266,14 +330,41 @@ flask shell
 # Verify it's gone
 >>> Task.query.get(3)
 None
+``` -->
+
+### DELETE - Removing Tasks (Route Example)
+
+Here's how to delete a task using a Flask route:
+
+```python
+@app.route('/task/delete/<int:task_id>')
+def delete_task(task_id):
+    # Get the task from database
+    task = Task.query.get(task_id)
+    
+    if not task:
+        return "Task not found", 404
+    
+    # Delete the task
+    db.session.delete(task)
+    
+    # Commit to remove from database
+    db.session.commit()
+    
+    return redirect('/tasks')
 ```
+
+**Key Points:**
+- `Task.query.get(id)` - Gets the task
+- `db.session.delete(task)` - Marks it for deletion
+- `db.session.commit()` - Removes it from database
 
 ---
 
 ## 7. Complete Module 2 App
 
 ```python
-from flask import Flask
+from flask import Flask, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -325,7 +416,7 @@ def all_tasks():
     tasks = Task.query.all()
     
     if not tasks:
-        return "<h1>No tasks yet!</h1><p>Add some tasks using Flask shell.</p>"
+        return "<h1>No tasks yet!</h1><p>Create tasks using the create route.</p>"
     
     html = "<h1>All Tasks</h1><ul>"
     for task in tasks:
@@ -387,6 +478,92 @@ def tasks_by_priority(level):
     html += "<a href='/tasks'>All Tasks</a>"
     return html
 
+# CREATE - Add new task via route
+@app.route('/task/create', methods=['GET', 'POST'])
+def create_task():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description', '')
+        priority = request.form.get('priority', 'medium')
+        status = request.form.get('status', 'pending')
+        
+        new_task = Task(title=title, description=description, priority=priority, status=status)
+        db.session.add(new_task)
+        db.session.commit()
+        
+        return redirect('/tasks')
+    
+    return """
+    <h1>Create New Task</h1>
+    <form method="POST">
+        <p>Title: <input type="text" name="title" required></p>
+        <p>Description: <textarea name="description"></textarea></p>
+        <p>Priority: 
+            <select name="priority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+        </p>
+        <p>Status: 
+            <select name="status">
+                <option value="pending" selected>Pending</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+            </select>
+        </p>
+        <button type="submit">Create Task</button>
+    </form>
+    <a href="/tasks">Back to Tasks</a>
+    """
+
+# UPDATE - Update existing task via route
+@app.route('/task/update/<int:task_id>', methods=['POST'])
+def update_task(task_id):
+    task = Task.query.get(task_id)
+    
+    if not task:
+        return "Task not found", 404
+    
+    task.title = request.form.get('title', task.title)
+    task.description = request.form.get('description', task.description)
+    task.status = request.form.get('status', task.status)
+    task.priority = request.form.get('priority', task.priority)
+    
+    db.session.commit()
+    
+    return redirect(f'/task/{task_id}')
+
+# DELETE - Delete task via route
+@app.route('/task/delete/<int:task_id>')
+def delete_task(task_id):
+    task = Task.query.get(task_id)
+    
+    if not task:
+        return "Task not found", 404
+    
+    db.session.delete(task)
+    db.session.commit()
+    
+    return redirect('/tasks')
+
+# Initialize sample data
+@app.route('/init-data')
+def init_data():
+    Task.query.delete()
+    db.session.commit()
+    
+    tasks = [
+        Task(title='Complete Flask Tutorial', description='Finish Module 1 and Module 2', priority='high', status='in-progress'),
+        Task(title='Setup Database', description='Configure SQLAlchemy with SQLite', priority='high', status='completed'),
+        Task(title='Build Dashboard UI', description='Create task list with Bootstrap', priority='medium'),
+    ]
+    
+    db.session.add_all(tasks)
+    db.session.commit()
+    
+    return f"Added {Task.query.count()} tasks! <a href='/tasks'>View Tasks</a>"
+
 
 # ==================== MAIN ====================
 
@@ -399,6 +576,35 @@ if __name__ == '__main__':
 ---
 
 ## 8. Populating with Sample Data
+
+You can create a route to add sample data programmatically:
+
+```python
+@app.route('/init-data')
+def init_data():
+    # Clear existing data (optional)
+    Task.query.delete()
+    db.session.commit()
+    
+    # Add sample tasks
+    tasks = [
+        Task(title='Complete Flask Tutorial', description='Finish Module 1 and Module 2', priority='high', status='in-progress'),
+        Task(title='Setup Database', description='Configure SQLAlchemy with SQLite', priority='high', status='completed'),
+        Task(title='Build Dashboard UI', description='Create task list with Bootstrap', priority='medium'),
+        Task(title='Add User Authentication', description='Login and signup forms', priority='medium'),
+        Task(title='Write Documentation', description='Document all routes and models', priority='low'),
+        Task(title='Deploy to Server', description='Host on PythonAnywhere', priority='low'),
+    ]
+    
+    db.session.add_all(tasks)
+    db.session.commit()
+    
+    return f"Added {Task.query.count()} tasks! <a href='/tasks'>View Tasks</a>"
+```
+
+Visit `/init-data` once to populate your database, then visit `/tasks` to see your data.
+
+<!-- ## 8. Populating with Sample Data (Flask Shell - Commented Out)
 
 Run these commands in Flask shell to add sample data:
 
@@ -429,7 +635,7 @@ db.session.commit()
 print(f"Added {Task.query.count()} tasks!")
 ```
 
-Now run the app and visit `/tasks` to see your data.
+Now run the app and visit `/tasks` to see your data. -->
 
 ---
 
