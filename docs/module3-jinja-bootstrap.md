@@ -171,12 +171,12 @@ def index():
 ## Key Takeaways
 
 1. **`render_template`**: The function used to serve HTML files from the `templates/` folder.
-2. **Template Inheritance**: Saves time by sharing layouts across multiple pages using `{% extends %}` and `{% block %}`.
+2. **Template Inheritance**: Saves time by sharing layouts across multiple pages using {% raw %}`{% extends %}`{% endraw %} and {% raw %}`{% block %}`{% endraw %}.
 3. **Bootstrap Basics**: Use Bootstrap for simple styling - navbar, buttons, forms, cards. Keep it minimal and easy to understand.
 4. **Jinja2 Syntax**: 
-   - `{{ variable }}` - Display data
-   - `{% for %}` - Loop through lists
-   - `{% if %}` - Conditional logic
+   - {% raw %}`{{ variable }}`{% endraw %} - Display data
+   - {% raw %}`{% for %}`{% endraw %} - Loop through lists
+   - {% raw %}`{% if %}`{% endraw %} - Conditional logic
 
 ---
 

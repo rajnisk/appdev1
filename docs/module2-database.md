@@ -363,36 +363,15 @@ def delete_task(task_id):
 
 ## 7. Database Relationships: Connecting Tables
 
-Relationships help us connect data between different tables. There are three main types of relationships you need to understand.
+Relationships connect data between different tables. You'll mainly use **One-to-Many** relationships.
 
-### Understanding Relationships with Real-World Examples
+### One-to-Many Relationship (Most Important)
 
-Think of relationships like connections in real life:
-- **One-to-One**: One person has one passport
-- **One-to-Many**: One teacher has many students
-- **Many-to-Many**: Many students enroll in many courses
+**Concept:** One record can have many related records, but each related record belongs to only one parent.
 
----
-
-### 1. One-to-Many Relationship (Most Common)
-
-**Concept:** One record in Table A can have many related records in Table B, but each record in Table B belongs to only one record in Table A.
-
-**Real-World Example:**
-- One **User** can create many **Tasks**
-- But each **Task** belongs to only one **User**
-
-**Visual Representation:**
-```
-User (1) ────────< (Many) Tasks
-  ├─ User 1
-  │   ├─ Task 1
-  │   ├─ Task 2
-  │   └─ Task 3
-  └─ User 2
-      ├─ Task 4
-      └─ Task 5
-```
+**Examples:**
+- One **User** can create many **Tasks** (each task belongs to one user)
+- One **Company** can create many **PlacementDrives** (each drive belongs to one company)
 
 #### TaskMaster Example:
 
@@ -401,7 +380,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     
-    # One-to-Many: One user has many tasks
+    # One user has many tasks
     tasks = db.relationship('Task', backref='owner', lazy=True)
 
 class Task(db.Model):
@@ -416,11 +395,11 @@ class Task(db.Model):
 ```python
 # Get all tasks for a user
 user = User.query.get(1)
-all_user_tasks = user.tasks  # Returns list of Task objects
+user_tasks = user.tasks  # Returns list of Task objects
 
 # Get the owner of a task
 task = Task.query.get(1)
-task_owner = task.owner  # Returns User object (via backref)
+task_owner = task.owner  # Returns User object
 ```
 
 #### Placement Portal Example:
@@ -430,7 +409,7 @@ class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     
-    # One company can create many placement drives
+    # One company has many drives
     drives = db.relationship('PlacementDrive', backref='company', lazy=True)
 
 class PlacementDrive(db.Model):
@@ -441,164 +420,25 @@ class PlacementDrive(db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
 ```
 
-**How to Use:**
-```python
-# Get all drives for a company
-company = Company.query.get(1)
-all_drives = company.drives  # Returns list of PlacementDrive objects
-
-# Get the company that created a drive
-drive = PlacementDrive.query.get(1)
-drive_company = drive.company  # Returns Company object
-```
-
 **Key Points:**
 - The "Many" side (Task/PlacementDrive) has the Foreign Key (`user_id`/`company_id`)
 - The "One" side (User/Company) has the relationship (`tasks`/`drives`)
-- `backref` creates a reverse relationship automatically
+- `backref` automatically creates reverse access (e.g., `task.owner`)
 
 ---
 
-### 2. One-to-One Relationship (Less Common)
+### Many-to-Many Relationship (For Placement Portal)
 
-**Concept:** One record in Table A relates to exactly one record in Table B, and vice versa.
+**Concept:** Many records can relate to many other records. For Placement Portal, students apply to drives.
 
-**Real-World Example:**
-- One **User** has one **Profile** (with additional details)
-- One **Profile** belongs to one **User**
+**Example:** Many **Students** apply to many **PlacementDrives**
 
-**Visual Representation:**
-```
-User (1) ──────── (1) Profile
-  ├─ User 1 ──────── Profile 1
-  └─ User 2 ──────── Profile 2
-```
-
-#### TaskMaster Example (Optional Enhancement):
-
-```python
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    
-    # One-to-One: One user has one profile
-    profile = db.relationship('UserProfile', backref='user', uselist=False)
-
-class UserProfile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    bio = db.Column(db.Text)
-    avatar_url = db.Column(db.String(200))
-    
-    # Foreign Key: This profile belongs to one user
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
-```
-
-**How to Use:**
-```python
-# Get user's profile
-user = User.query.get(1)
-user_profile = user.profile  # Returns single UserProfile object (not a list!)
-
-# Get profile's user
-profile = UserProfile.query.get(1)
-profile_user = profile.user  # Returns User object
-```
-
-#### Placement Portal Example:
-
-```python
-class Student(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120), unique=True)
-    
-    # One student has one academic record
-    academic_record = db.relationship('AcademicRecord', backref='student', uselist=False)
-
-class AcademicRecord(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    cgpa = db.Column(db.Float)
-    semester = db.Column(db.Integer)
-    
-    # Foreign Key: This record belongs to one student
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), unique=True, nullable=False)
-```
-
-**Key Points:**
-- Use `uselist=False` in the relationship (tells SQLAlchemy it's one-to-one, not a list)
-- The Foreign Key has `unique=True` (ensures one-to-one constraint)
-
----
-
-### 3. Many-to-Many Relationship (Advanced)
-
-**Concept:** Records in Table A can relate to many records in Table B, and records in Table B can relate to many records in Table A.
-
-**Real-World Example:**
-- Many **Students** can apply to many **PlacementDrives**
-- Many **PlacementDrives** can have many **Students** applying
-
-**Visual Representation:**
-```
-Students (Many) ──────── (Many) PlacementDrives
-  ├─ Student 1 ──────── Drive 1
-  │   └─────────────── Drive 2
-  └─ Student 2 ──────── Drive 1
-      └─────────────── Drive 3
-```
-
-#### Placement Portal Example:
-
-```python
-# Association Table (Junction Table)
-# This table connects Students and PlacementDrives
-student_drive = db.Table('student_drive',
-    db.Column('student_id', db.Integer, db.ForeignKey('student.id'), primary_key=True),
-    db.Column('drive_id', db.Integer, db.ForeignKey('placement_drive.id'), primary_key=True)
-)
-
-class Student(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    
-    # Many-to-Many: One student can apply to many drives
-    applied_drives = db.relationship('PlacementDrive', 
-                                     secondary=student_drive,
-                                     backref='applicants')
-
-class PlacementDrive(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    
-    # The relationship is defined on Student, but backref creates reverse access
-    # So you can also do: drive.applicants to get all students who applied
-```
-
-**How to Use:**
-```python
-# Student applies to a drive
-student = Student.query.get(1)
-drive = PlacementDrive.query.get(1)
-student.applied_drives.append(drive)
-db.session.commit()
-
-# Get all drives a student applied to
-student = Student.query.get(1)
-all_applied_drives = student.applied_drives  # Returns list of PlacementDrive objects
-
-# Get all students who applied to a drive
-drive = PlacementDrive.query.get(1)
-all_applicants = drive.applicants  # Returns list of Student objects
-```
-
-**Alternative: Using Application Model (Better for Placement Portal)**
-
-For Placement Portal, you'll likely want to store additional information about the application (like status, date applied, etc.), so use an intermediate model:
+Use an **Application** model to store the relationship and additional data (status, date, etc.):
 
 ```python
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.String(20), default='applied')  # applied, shortlisted, selected, rejected
+    status = db.Column(db.String(20), default='applied')  # applied, shortlisted, selected
     applied_date = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Foreign Keys
@@ -631,348 +471,16 @@ db.session.commit()
 
 # Get all applications for a student
 student = Student.query.get(1)
-student_applications = student.applications  # Returns list of Application objects
+student_applications = student.applications  # List of Application objects
 
 # Get all applications for a drive
 drive = PlacementDrive.query.get(1)
-drive_applications = drive.applications  # Returns list of Application objects
-```
-
-**Key Points:**
-- Many-to-Many requires an intermediate/junction table
-- You can use a simple `db.Table` or a full model (if you need extra fields)
-- The intermediate table has Foreign Keys to both tables
-
----
-
-## Relationship Summary Table
-
-| Relationship Type | TaskMaster Example | Placement Portal Example | When to Use |
-|------------------|-------------------|-------------------------|-------------|
-| **One-to-Many** | User → Tasks | Company → PlacementDrives | Most common. One parent, many children |
-| **One-to-One** | User → Profile | Student → AcademicRecord | When you want to separate related data |
-| **Many-to-Many** | (Not used in TaskMaster) | Students ↔ PlacementDrives | When both sides can have multiple connections |
-
----
-
-## Quick Reference: Relationship Syntax
-
-### One-to-Many
-```python
-# Parent Model (One)
-class Parent(db.Model):
-    children = db.relationship('Child', backref='parent', lazy=True)
-
-# Child Model (Many)
-class Child(db.Model):
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
-```
-
-### One-to-One
-```python
-# Model A
-class ModelA(db.Model):
-    model_b = db.relationship('ModelB', backref='model_a', uselist=False)
-
-# Model B
-class ModelB(db.Model):
-    model_a_id = db.Column(db.Integer, db.ForeignKey('model_a.id'), unique=True, nullable=False)
-```
-
-### Many-to-Many (Simple)
-```python
-# Junction Table
-association_table = db.Table('association',
-    db.Column('a_id', db.Integer, db.ForeignKey('model_a.id'), primary_key=True),
-    db.Column('b_id', db.Integer, db.ForeignKey('model_b.id'), primary_key=True)
-)
-
-# Model A
-class ModelA(db.Model):
-    model_bs = db.relationship('ModelB', secondary=association_table, backref='model_as')
+drive_applications = drive.applications  # List of Application objects
 ```
 
 ---
 
-## 8. Complete Module 2 App
-
-```python
-from flask import Flask, request, redirect
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///taskmaster.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-
-# ==================== MODELS ====================
-
-class Task(db.Model):
-    __tablename__ = 'tasks'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    status = db.Column(db.String(20), default='pending')
-    priority = db.Column(db.String(10), default='medium')
-    
-    def __repr__(self):
-        return f'<Task {self.id}: {self.title}>'
-    
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'title': self.title,
-            'description': self.description,
-            'status': self.status,
-            'priority': self.priority
-        }
-
-
-# ==================== ROUTES ====================
-
-@app.route('/')
-def home():
-    return """
-    <h1>TaskMaster</h1>
-    <nav>
-        <a href="/tasks">View All Tasks</a> |
-        <a href="/tasks/pending">Pending</a> |
-        <a href="/tasks/completed">Completed</a>
-    </nav>
-    """
-
-@app.route('/tasks')
-def all_tasks():
-    tasks = Task.query.all()
-    
-    if not tasks:
-        return "<h1>No tasks yet!</h1><p>Create tasks using the create route.</p>"
-    
-    html = "<h1>All Tasks</h1><ul>"
-    for task in tasks:
-        status_mark = "[DONE]" if task.status == 'completed' else "[PENDING]"
-        html += f"<li>{status_mark} <a href='/task/{task.id}'>{task.title}</a> [{task.priority}]</li>"
-    html += "</ul><a href='/'>Home</a>"
-    
-    return html
-
-@app.route('/tasks/<status>')
-def tasks_by_status(status):
-    tasks = Task.query.filter_by(status=status).all()
-    
-    html = f"<h1>{status.title()} Tasks</h1>"
-    
-    if not tasks:
-        html += f"<p>No {status} tasks found.</p>"
-    else:
-        html += "<ul>"
-        for task in tasks:
-            html += f"<li><a href='/task/{task.id}'>{task.title}</a></li>"
-        html += "</ul>"
-    
-    html += "<a href='/tasks'>All Tasks</a>"
-    return html
-
-@app.route('/task/<int:task_id>')
-def task_detail(task_id):
-    task = Task.query.get(task_id)
-    
-    if not task:
-        return "<h1>Task not found!</h1><a href='/tasks'>Back</a>", 404
-    
-    priority_color = {'high': 'red', 'medium': 'orange', 'low': 'green'}.get(task.priority, 'gray')
-    
-    return f"""
-    <h1>{task.title}</h1>
-    <p><strong>Description:</strong> {task.description or 'No description'}</p>
-    <p><strong>Status:</strong> {task.status}</p>
-    <p><strong>Priority:</strong> <span style="color:{priority_color}">{task.priority}</span></p>
-    <hr>
-    <a href="/tasks">Back to Tasks</a>
-    """
-
-@app.route('/priority/<level>')
-def tasks_by_priority(level):
-    tasks = Task.query.filter_by(priority=level).all()
-    
-    html = f"<h1>{level.title()} Priority Tasks</h1>"
-    
-    if not tasks:
-        html += f"<p>No {level} priority tasks.</p>"
-    else:
-        html += "<ul>"
-        for task in tasks:
-            html += f"<li><a href='/task/{task.id}'>{task.title}</a> - {task.status}</li>"
-        html += "</ul>"
-    
-    html += "<a href='/tasks'>All Tasks</a>"
-    return html
-
-# CREATE - Add new task via route
-@app.route('/task/create', methods=['GET', 'POST'])
-def create_task():
-    if request.method == 'POST':
-        title = request.form.get('title')
-        description = request.form.get('description', '')
-        priority = request.form.get('priority', 'medium')
-        status = request.form.get('status', 'pending')
-        
-        new_task = Task(title=title, description=description, priority=priority, status=status)
-        db.session.add(new_task)
-        db.session.commit()
-        
-        return redirect('/tasks')
-    
-    return """
-    <h1>Create New Task</h1>
-    <form method="POST">
-        <p>Title: <input type="text" name="title" required></p>
-        <p>Description: <textarea name="description"></textarea></p>
-        <p>Priority: 
-            <select name="priority">
-                <option value="low">Low</option>
-                <option value="medium" selected>Medium</option>
-                <option value="high">High</option>
-            </select>
-        </p>
-        <p>Status: 
-            <select name="status">
-                <option value="pending" selected>Pending</option>
-                <option value="in-progress">In Progress</option>
-                <option value="completed">Completed</option>
-            </select>
-        </p>
-        <button type="submit">Create Task</button>
-    </form>
-    <a href="/tasks">Back to Tasks</a>
-    """
-
-# UPDATE - Update existing task via route
-@app.route('/task/update/<int:task_id>', methods=['POST'])
-def update_task(task_id):
-    task = Task.query.get(task_id)
-    
-    if not task:
-        return "Task not found", 404
-    
-    task.title = request.form.get('title', task.title)
-    task.description = request.form.get('description', task.description)
-    task.status = request.form.get('status', task.status)
-    task.priority = request.form.get('priority', task.priority)
-    
-    db.session.commit()
-    
-    return redirect(f'/task/{task_id}')
-
-# DELETE - Delete task via route
-@app.route('/task/delete/<int:task_id>')
-def delete_task(task_id):
-    task = Task.query.get(task_id)
-    
-    if not task:
-        return "Task not found", 404
-    
-    db.session.delete(task)
-    db.session.commit()
-    
-    return redirect('/tasks')
-
-# Initialize sample data
-@app.route('/init-data')
-def init_data():
-    Task.query.delete()
-    db.session.commit()
-    
-    tasks = [
-        Task(title='Complete Flask Tutorial', description='Finish Module 1 and Module 2', priority='high', status='in-progress'),
-        Task(title='Setup Database', description='Configure SQLAlchemy with SQLite', priority='high', status='completed'),
-        Task(title='Build Dashboard UI', description='Create task list with Bootstrap', priority='medium'),
-    ]
-    
-    db.session.add_all(tasks)
-    db.session.commit()
-    
-    return f"Added {Task.query.count()} tasks! <a href='/tasks'>View Tasks</a>"
-
-
-# ==================== MAIN ====================
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
-```
-
----
-
-## 9. Populating with Sample Data
-
-You can create a route to add sample data programmatically:
-
-```python
-@app.route('/init-data')
-def init_data():
-    # Clear existing data (optional)
-    Task.query.delete()
-    db.session.commit()
-    
-    # Add sample tasks
-    tasks = [
-        Task(title='Complete Flask Tutorial', description='Finish Module 1 and Module 2', priority='high', status='in-progress'),
-        Task(title='Setup Database', description='Configure SQLAlchemy with SQLite', priority='high', status='completed'),
-        Task(title='Build Dashboard UI', description='Create task list with Bootstrap', priority='medium'),
-        Task(title='Add User Authentication', description='Login and signup forms', priority='medium'),
-        Task(title='Write Documentation', description='Document all routes and models', priority='low'),
-        Task(title='Deploy to Server', description='Host on PythonAnywhere', priority='low'),
-    ]
-    
-    db.session.add_all(tasks)
-    db.session.commit()
-    
-    return f"Added {Task.query.count()} tasks! <a href='/tasks'>View Tasks</a>"
-```
-
-Visit `/init-data` once to populate your database, then visit `/tasks` to see your data.
-
-<!-- ## 8. Populating with Sample Data (Flask Shell - Commented Out)
-
-Run these commands in Flask shell to add sample data:
-
-```bash
-flask shell
-```
-
-```python
-from app import db, Task
-
-# Clear existing data (optional)
-Task.query.delete()
-db.session.commit()
-
-# Add sample tasks
-tasks = [
-    Task(title='Complete Flask Tutorial', description='Finish Module 1 and Module 2', priority='high', status='in-progress'),
-    Task(title='Setup Database', description='Configure SQLAlchemy with SQLite', priority='high', status='completed'),
-    Task(title='Build Dashboard UI', description='Create task list with Bootstrap', priority='medium'),
-    Task(title='Add User Authentication', description='Login and signup forms', priority='medium'),
-    Task(title='Write Documentation', description='Document all routes and models', priority='low'),
-    Task(title='Deploy to Server', description='Host on PythonAnywhere', priority='low'),
-]
-
-db.session.add_all(tasks)
-db.session.commit()
-
-print(f"Added {Task.query.count()} tasks!")
-```
-
-Now run the app and visit `/tasks` to see your data. -->
-
----
-
-## 10. Module 2 Exercises
+## 8. Module 2 Exercises
 
 1. **Add a Category Field:** Add a `category` column (work, personal, study) to the Task model
 
@@ -993,7 +501,7 @@ Now run the app and visit `/tasks` to see your data. -->
 
 ---
 
-## 11. How This Relates to Your Final Project
+## 9. How This Relates to Your Final Project
 
 | TaskMaster Model | Placement Portal Models |
 |------------------|------------------------|
@@ -1027,7 +535,7 @@ class PlacementDrive(db.Model):
 
 ---
 
-## 12. Key Takeaways
+## 10. Key Takeaways
 
 1. **SQLAlchemy** lets you work with databases using Python objects
 2. **Models** are Python classes that represent database tables
@@ -1041,7 +549,7 @@ class PlacementDrive(db.Model):
 
 ---
 
-## 13. Quick Reference
+## 11. Quick Reference
 
 ```python
 # Create

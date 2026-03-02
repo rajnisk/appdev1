@@ -34,7 +34,6 @@ In the **Placement Portal**, a Placement Drive goes: **Requested (Company)** -> 
 Instead of a full edit page, we can use simple action buttons:
 
 ```python
-{% raw %}
 @app.route('/task/complete/<int:id>')
 def complete_task(id):
     task = Task.query.get_or_404(id)
@@ -42,7 +41,6 @@ def complete_task(id):
     db.session.commit()
     flash("Task marked as completed!", "success")
     return redirect('/')
-{% endraw %}
 ```
 
 ---
