@@ -81,11 +81,13 @@ Quick revision guide for viva and exams. For detailed explanations, refer to the
 - Flask fills in the data
 
 **Basic Syntax:**
+{% raw %}
 - `{{ variable }}` - Show value
 - `{% for item in list %}` - Loop
 - `{% if condition %}` - If/else
 - `{% extends "base.html" %}` - Use parent template
 - `{% block %}` - Replaceable section
+{% endraw %}
 
 **Template Inheritance:**
 - `base.html` = parent (common layout)
@@ -607,7 +609,7 @@ results = Task.query.filter(Task.title.like(f'%{query}%')).all()
 - [ ] Flask routes and dynamic URLs
 - [ ] Database models and CRUD
 - [ ] One-to-Many relationship
-- [ ] Jinja2 syntax ({{ }}, {% %})
+- [ ] Jinja2 syntax {% raw %}({{ }}, {% %}){% endraw %}
 - [ ] Form handling (GET/POST)
 - [ ] Password hashing
 - [ ] Session management
