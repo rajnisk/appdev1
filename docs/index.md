@@ -34,6 +34,7 @@ A 9-module roadmap to learn all core concepts required for building a **Placemen
 | **Module 7** | [The Bridge](module7-search-api.html) | Search functionality and API basics |
 | **Module 8** | [The Polish](module8-polish.html) | Refactoring and error handling |
 | **Final** | [Full App Code](final-taskmaster.html) | Complete TaskMaster code structure |
+| **Quick Notes** | [Cheat Sheet](quick-notes.html) | Quick reference for all concepts |
 
 ---
 
